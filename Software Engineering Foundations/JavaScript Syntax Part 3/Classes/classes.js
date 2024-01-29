@@ -3,24 +3,24 @@ class HospitalEmployee {
     constructor(name) {
       this._name = name;
       this._remainingVacationDays = 20;
-    }
+    };
     
     get name() {
       return this._name;
-    }
+    };
     
     get remainingVacationDays() {
       return this._remainingVacationDays;
-    }
+    };
     
     takeVacationDays(daysOff) {
       this._remainingVacationDays -= daysOff;
-    }
+    };
   
     //Static method that can only be called within HospitalEmployee class
     static generatePassword() {
       return Math.floor(Math.random()*10000);
-    }
+    };
   }
   
   class Nurse extends HospitalEmployee {
@@ -43,7 +43,7 @@ class HospitalEmployee {
   nurseOlynyk.takeVacationDays(5);
   console.log(nurseOlynyk.remainingVacationDays);
   nurseOlynyk.addCertification('Genetics');
-  console.log(nurseaOlynyk.certifications);
+  console.log(nurseOlynyk.certifications);
   
   //calling static method
   console.log(HospitalEmployee.generatePassword());

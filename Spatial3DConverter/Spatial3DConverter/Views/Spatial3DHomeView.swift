@@ -1,39 +1,45 @@
 import SwiftUI
 
 struct Spatial3DHomeView: View {
-    var onConvertPhoto: () -> Void
-    var onConvertVideo: () -> Void
-    var onOpenGallery: () -> Void
-    var onOpenBatch: () -> Void
-
     var body: some View {
-        NavigationStack {
-            List {
-                Section("Convert") {
-                    Button(action: onConvertPhoto) {
-                        Label("Convert Photo", systemImage: "photo.on.rectangle.angled")
-                    }
-                    Button(action: onConvertVideo) {
-                        Label("Convert Video", systemImage: "video")
-                    }
+        List {
+            Section("Convert") {
+                NavigationLink {
+                    Spatial3DConvertView(mediaKind: .photo)
+                } label: {
+                    Label("Convert Photo", systemImage: "photo.on.rectangle.angled")
                 }
-
-                Section("Library") {
-                    Button(action: onOpenGallery) {
-                        Label("Spatial Gallery", systemImage: "square.grid.2x2")
-                    }
-                    Button(action: onOpenBatch) {
-                        Label("Batch Queue", systemImage: "tray.full")
-                    }
-                }
-
-                Section("About") {
-                    Text("Spatial3D Converter turns 2D photos and videos into Spatial, SBS, and VR formats using on-device AI.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                NavigationLink {
+                    Spatial3DConvertView(mediaKind: .video)
+                } label: {
+                    Label("Convert Video", systemImage: "video")
                 }
             }
-            .navigationTitle("Spatial3D Converter")
+
+            Section("Library") {
+                NavigationLink {
+                    Spatial3DGalleryView()
+                } label: {
+                    Label("Spatial Gallery", systemImage: "square.grid.2x2")
+                }
+                NavigationLink {
+                    Spatial3DBatchQueueView()
+                } label: {
+                    Label("Batch Queue", systemImage: "tray.full")
+                }
+                NavigationLink {
+                    Spatial3DFormatConvertView()
+                } label: {
+                    Label("VR ↔ Spatial Convert", systemImage: "arrow.triangle.2.circlepath")
+                }
+            }
+
+            Section("About") {
+                Text("Spatial3D Converter turns 2D photos and videos into Spatial, SBS, and VR formats using on-device AI optimized for iOS 26+.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
+        .navigationTitle("Spatial3D Converter")
     }
 }

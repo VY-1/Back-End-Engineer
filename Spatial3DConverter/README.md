@@ -1,84 +1,65 @@
 # Spatial3D Converter
 
-**Spatial3D Converter** is an iOS app that converts 2D photos and videos into Spatial (HEIC / MV-HEVC), SBS VR, and top-bottom VR formats using on-device AI — combining StereoShift-style speed with Spatial Media Toolkit-style output formats.
+**Spatial3D Converter** converts 2D photos and videos into Spatial (HEIC / MV-HEVC), SBS VR, and top-bottom VR formats using on-device AI — optimized for **iOS 26+**.
 
 ## Requirements
 
 - macOS with **Xcode 26+**
-- iPhone running **iOS 26+** (A17 Pro or newer recommended for real-time video)
-- Apple Developer account for device testing
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (optional, recommended)
+- iPhone **iOS 26+** (A17 Pro or newer recommended for real-time video)
 
-## Quick Start (macOS)
+## Quick Start
 
-1. Open Xcode → **File → New → Project → iOS App**
-2. Product name: **Spatial3D Converter**
-3. Organization identifier: e.g. `com.yourteam`
-4. Interface: **SwiftUI**, Language: **Swift**
-5. Save inside this repo as `Spatial3DConverter/Spatial3DConverter.xcodeproj`
-6. Set **Bundle Identifier** to `com.yourteam.Spatial3DConverter`
-7. Set **Deployment Target** to **iOS 26.0**
-8. Delete the default template Swift files Xcode creates
-9. Drag the existing `Spatial3DConverter/` source folder into the project (copy items if needed, create groups)
-10. Add `Spatial3DDIBR.metal` to the target **Compile Sources**
-11. Add `Spatial3DWebViewer/` as folder reference (optional, for Web Share)
-12. Build and run on a physical iPhone
-
-## Project Layout
-
-```
-Spatial3DConverter/
-├── Spatial3DConverter.xcodeproj      # Create in Xcode on Mac
-├── Spatial3DConverter/
-│   ├── App/Spatial3DConverterApp.swift
-│   ├── Views/Spatial3D*.swift
-│   ├── Services/Spatial3D*.swift
-│   ├── Models/Spatial3DConvertedMedia.swift
-│   ├── Shaders/Spatial3DDIBR.metal
-│   └── Resources/                    # Core AI model bundles
-├── Spatial3DWebViewer/
-├── Spatial3DConverterTests/
-└── Spatial3DConverterUITests/
-```
-
-## Core AI Models
-
-Download and convert depth models on your Mac using Xcode 26 Core AI tooling:
+### Option A — XcodeGen (recommended)
 
 ```bash
-# Example: download Depth Anything V2 Small, then convert with coreai-build
-huggingface-cli download apple/coreml-depth-anything-v2-small \
-  --local-dir ./models/DepthV2Small \
-  --include "DepthAnythingV2SmallF16.mlpackage/*"
-
-# Convert to AOT Core AI bundles (Xcode 26)
-coreai-build --input ./models/DepthV2Small \
-  --output ./Spatial3DConverter/Spatial3DConverter/Resources/Spatial3DDepthV2Small.coreai
+cd Spatial3DConverter
+brew install xcodegen   # if needed
+xcodegen generate
+open Spatial3DConverter.xcodeproj
 ```
 
-Repeat for Video Depth Anything (Quality mode) and Depth Anything V2-Base (Photo mode).
+Set your **Development Team** in the project, then build on a physical iPhone.
 
-## Features Implemented (Scaffold)
+### Option B — Manual Xcode project
 
-- Photo conversion pipeline with depth cache and strength slider
-- Turbo / Best Quality engine mode picker
-- Output format picker (Spatial Photo, Spatial Video, SBS, Top-Bottom)
-- Preview modes (wiggle, cross-eye, parallel, SBS)
-- In-app gallery with delete
-- Batch queue UI scaffold
-- Web Share server scaffold + LAN viewer HTML
-- Real-time video pipeline scaffold (wire Core AI + AVFoundation on device)
+See the README section in the initial scaffold: create an iOS App target named **Spatial3D Converter** (`Spatial3DConverter`) and import the `Spatial3DConverter/` source folder.
 
-## Next Steps on Device
+## Download Core AI Models
 
-1. Replace placeholder depth inference in `Spatial3DDepthEstimationService` with Core AI model execution
-2. Wire `Spatial3DRealTimeVideoPipeline` to triple-buffer decode → infer → DIBR → MV-HEVC encode
-3. Complete MV-HEVC spatial metadata in `Spatial3DSpatialVideoWriter`
-4. Implement full `Spatial3DVRFormatConverter` read/write paths
-5. Add StoreKit 2 IAP for Pro features
+```bash
+./scripts/download_spatial3d_models.sh
+```
+
+Add generated `Resources/*.coreai` bundles to the app target. Replace `Spatial3DPlaceholderCoreAIProvider` with your Core AI integration in `Spatial3DCoreAIModelProvider.swift`.
+
+## Features
+
+| Feature | Status |
+|---------|--------|
+| Photo → Spatial / SBS / Top-Bottom | Implemented |
+| Video → Spatial / SBS (real-time pipeline) | Implemented (device testing required) |
+| Turbo / Best Quality engine modes | Implemented |
+| Depth cache + instant strength slider | Implemented |
+| Preview modes (wiggle, cross-eye, parallel, SBS) | Implemented |
+| Save to Photos / export file | Implemented |
+| In-app gallery + Spatial Scenes | Implemented |
+| Batch conversion queue | Implemented |
+| VR ↔ Spatial format conversion | Implemented |
+| Local Web Share (PIN + LAN gallery) | Implemented |
+| Core AI model integration | Placeholder — wire on Mac |
+
+## Architecture
+
+- **`Spatial3DTurboQualityEngine`** — photo + per-frame video processing
+- **`Spatial3DRealTimeVideoPipeline`** — AVAssetReader → depth → DIBR → AVAssetWriter
+- **`Spatial3DDepthCache`** — cached depth maps for instant re-stereo
+- **`Spatial3DVRFormatConverter`** — SBS/TB ↔ Spatial HEIC
+- **`Spatial3DWebShareServer`** — local HTTP gallery for VR browsers
 
 ## Privacy
 
-All processing is on-device. No media is uploaded to cloud servers.
+All processing is on-device. Web Share serves media only on your local network with a PIN.
 
 ## License
 

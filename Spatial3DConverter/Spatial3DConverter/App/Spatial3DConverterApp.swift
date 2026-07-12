@@ -10,60 +10,50 @@ struct Spatial3DConverterApp: App {
             Spatial3DRootView()
                 .environmentObject(galleryStore)
                 .environmentObject(webShareServer)
+                .onAppear {
+                    webShareServer.configure(galleryStore: galleryStore)
+                }
         }
     }
 }
 
 struct Spatial3DRootView: View {
-    @EnvironmentObject private var galleryStore: Spatial3DGalleryStore
-    @EnvironmentObject private var webShareServer: Spatial3DWebShareServer
-
-    @State private var showConvertPhoto = false
-    @State private var showConvertVideo = false
-    @State private var showGallery = false
-    @State private var showBatch = false
-
     var body: some View {
-        Spatial3DHomeView(
-            onConvertPhoto: { showConvertPhoto = true },
-            onConvertVideo: { showConvertVideo = true },
-            onOpenGallery: { showGallery = true },
-            onOpenBatch: { showBatch = true }
-        )
-        .sheet(isPresented: $showConvertPhoto) {
+        TabView {
             NavigationStack {
-                Spatial3DConvertView()
+                Spatial3DHomeView()
             }
-        }
-        .sheet(isPresented: $showConvertVideo) {
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+
             NavigationStack {
-                Spatial3DConvertView()
+                Spatial3DConvertView(mediaKind: .photo)
             }
-        }
-        .sheet(isPresented: $showGallery) {
+            .tabItem {
+                Label("Photo", systemImage: "photo")
+            }
+
+            NavigationStack {
+                Spatial3DConvertView(mediaKind: .video)
+            }
+            .tabItem {
+                Label("Video", systemImage: "video")
+            }
+
             NavigationStack {
                 Spatial3DGalleryView()
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button(webShareServer.isRunning ? "Stop Share" : "Web Share") {
-                                toggleWebShare()
-                            }
-                        }
-                    }
             }
-        }
-        .sheet(isPresented: $showBatch) {
+            .tabItem {
+                Label("Gallery", systemImage: "square.grid.2x2")
+            }
+
             NavigationStack {
                 Spatial3DBatchQueueView()
             }
-        }
-    }
-
-    private func toggleWebShare() {
-        if webShareServer.isRunning {
-            webShareServer.stop()
-        } else {
-            try? webShareServer.start()
+            .tabItem {
+                Label("Batch", systemImage: "tray.full")
+            }
         }
     }
 }

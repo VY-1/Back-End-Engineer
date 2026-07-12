@@ -19,6 +19,7 @@ struct Spatial3DSceneView: View {
 
 struct Spatial3DRealTimePreviewPlayer: View {
     @StateObject private var pipeline = Spatial3DRealTimePreviewPipeline()
+    let videoURL: URL?
 
     var body: some View {
         VStack(spacing: 12) {
@@ -30,32 +31,14 @@ struct Spatial3DRealTimePreviewPlayer: View {
             if pipeline.isPreviewing {
                 ProgressView("Previewing…")
             }
-        }
-        .navigationTitle("Live Preview")
-    }
-}
-
-struct Spatial3DBatchQueueView: View {
-    @StateObject private var queue = Spatial3DBatchConversionQueue()
-
-    var body: some View {
-        List {
-            if queue.queue.isEmpty {
-                ContentUnavailableView("Empty Queue", systemImage: "tray", description: Text("Add photos or videos to batch convert."))
-            } else {
-                ForEach(queue.queue) { item in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(item.type.rawValue.capitalized)
-                            Text(item.status.rawValue.capitalized)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    }
+            if let videoURL {
+                Button("Start Preview") {
+                    Task { await pipeline.startPreview(for: videoURL) }
                 }
+                .buttonStyle(.borderedProminent)
             }
         }
-        .navigationTitle("Batch Queue")
+        .navigationTitle("Live Preview")
+        .onDisappear { pipeline.stopPreview() }
     }
 }

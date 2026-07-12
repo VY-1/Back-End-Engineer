@@ -1,5 +1,45 @@
 import SwiftUI
 
+struct Spatial3DPreviewModeView: View {
+    let image: UIImage?
+    @Binding var mode: Spatial3DPreviewMode
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Picker("Preview", selection: $mode) {
+                ForEach(Spatial3DPreviewMode.allCases) { previewMode in
+                    Text(previewMode.displayName).tag(previewMode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Group {
+                if let image {
+                    switch mode {
+                    case .wiggle:
+                        TimelineView(.animation(minimumInterval: 0.12)) { timeline in
+                            let phase = timeline.date.timeIntervalSinceReferenceDate
+                            let toggle = Int(phase / 0.12) % 2 == 0
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .scaleEffect(toggle ? 1.0 : 0.995)
+                                .offset(x: toggle ? 0 : 2)
+                        }
+                    default:
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                    }
+                } else {
+                    ContentUnavailableView("No Preview", systemImage: "photo", description: Text("Select media to preview."))
+                }
+            }
+            .frame(maxHeight: 360)
+        }
+    }
+}
+
 struct Spatial3DEngineModePicker: View {
     @Binding var mode: Spatial3DEngineMode
 
@@ -23,50 +63,5 @@ struct Spatial3DOutputFormatPicker: View {
             }
         }
         .pickerStyle(.menu)
-    }
-}
-
-struct Spatial3DPreviewModeView: View {
-    let image: UIImage?
-    @Binding var mode: Spatial3DPreviewMode
-    @State private var showLeftEye = true
-
-    var body: some View {
-        VStack(spacing: 12) {
-            Picker("Preview", selection: $mode) {
-                ForEach(Spatial3DPreviewMode.allCases) { previewMode in
-                    Text(previewMode.displayName).tag(previewMode)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Group {
-                if let image {
-                    switch mode {
-                    case .wiggle:
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .opacity(showLeftEye ? 1 : 0.92)
-                            .scaleEffect(showLeftEye ? 1 : 0.995)
-                            .onAppear { startWiggle() }
-                    default:
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                    }
-                } else {
-                    ContentUnavailableView("No Preview", systemImage: "photo", description: Text("Select media to preview."))
-                }
-            }
-            .frame(maxHeight: 360)
-        }
-    }
-
-    private func startWiggle() {
-        guard mode == .wiggle else { return }
-        Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
-            showLeftEye.toggle()
-        }
     }
 }

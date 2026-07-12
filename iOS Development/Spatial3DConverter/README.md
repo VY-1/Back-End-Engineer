@@ -13,7 +13,7 @@
 ### Option A — XcodeGen (recommended)
 
 ```bash
-cd Spatial3DConverter
+cd "iOS Development/Spatial3DConverter"
 brew install xcodegen   # if needed
 xcodegen generate
 open Spatial3DConverter.xcodeproj

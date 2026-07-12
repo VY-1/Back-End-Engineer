@@ -1,0 +1,59 @@
+name: Spatial3DConverter
+options:
+  bundleIdPrefix: com.spatial3d
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    DEVELOPMENT_TEAM: YOUR_TEAM_ID
+
+targets:
+  Spatial3DConverter:
+    type: application
+    platform: iOS
+    sources:
+      - path: Spatial3DConverter
+    resources:
+      - path: Spatial3DConverter/Resources
+    settings:
+      base:
+        PRODUCT_NAME: Spatial3D Converter
+        PRODUCT_BUNDLE_IDENTIFIER: com.spatial3d.Spatial3DConverter
+        INFOPLIST_FILE: Spatial3DConverter/Info.plist
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: 1
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies: []
+
+  Spatial3DConverterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Spatial3DConverterTests
+    dependencies:
+      - target: Spatial3DConverter
+
+  Spatial3DConverterUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Spatial3DConverterUITests
+    dependencies:
+      - target: Spatial3DConverter
+
+schemes:
+  Spatial3DConverter:
+    build:
+      targets:
+        Spatial3DConverter: all
+    run:
+      config: Debug
+    test:
+      targets:
+        - Spatial3DConverterTests
+        - Spatial3DConverterUITests

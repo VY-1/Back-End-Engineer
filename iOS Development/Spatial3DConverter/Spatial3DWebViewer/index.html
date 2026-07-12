@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spatial3D Web Viewer</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; margin: 0; background: #111; color: #fff; }
+    header { padding: 16px; background: #1c1c1e; }
+    main { padding: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .card { background: #2c2c2e; border-radius: 12px; overflow: hidden; cursor: pointer; }
+    .card img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+    .viewer { display: none; position: fixed; inset: 0; background: #000; }
+    .viewer.active { display: flex; align-items: center; justify-content: center; }
+    .viewer img, .viewer video { max-width: 100%; max-height: 100%; }
+    button { margin-top: 12px; padding: 10px 16px; border-radius: 10px; border: 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Spatial3D Converter — Web Share</h1>
+    <p id="status">Enter PIN in the app to browse shared media on your local network.</p>
+  </header>
+  <main>
+    <div class="grid" id="gallery"></div>
+  </main>
+  <div class="viewer" id="viewer">
+    <div>
+      <img id="viewerImage" alt="SBS preview" />
+      <video id="viewerVideo" controls playsinline></video>
+      <div>
+        <button id="enterVR">Enter VR</button>
+        <button id="closeViewer">Close</button>
+      </div>
+    </div>
+  </div>
+  <script src="viewer.js"></script>
+</body>
+</html>
